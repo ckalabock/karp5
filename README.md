@@ -163,3 +163,33 @@ Karp5Shop.Server/
 Karp5Shop.Shared/
   ProductDto.cs
 ```
+
+## Основные компоненты и файлы
+
+`Karp5Shop.sln` - файл решения, объединяет клиентский, серверный и общий проекты.
+
+`Karp5Shop.Shared/ProductDto.cs` - общая модель товара, которая используется и клиентом, и сервером. В ней описаны поля товара: `Id`, `Name`, `Description`, `Price`, `Stock`, а также правила валидации формы.
+
+`Karp5Shop.Server/Program.cs` - точка входа серверного приложения. Здесь подключаются контроллеры, Entity Framework Core, SQLite, Swagger, статические файлы Blazor WebAssembly и fallback на `index.html`.
+
+`Karp5Shop.Server/Data/AppDbContext.cs` - контекст Entity Framework Core. Описывает таблицу `Products`, настройки поля цены и стартовые тестовые товары, которые появляются при первом запуске.
+
+`Karp5Shop.Server/Models/Product.cs` - серверная сущность товара, которая хранится в базе данных SQLite.
+
+`Karp5Shop.Server/Controllers/ProductsController.cs` - API-контроллер товаров. Реализует получение списка, добавление, изменение и удаление товаров через маршруты `/api/products`.
+
+`Karp5Shop.Server/appsettings.json` - настройки серверного приложения, включая строку подключения к SQLite-базе `products.db`.
+
+`Karp5Shop.Client/Program.cs` - точка входа Blazor WebAssembly клиента. Создает приложение и настраивает `HttpClient` для запросов к API.
+
+`Karp5Shop.Client/App.razor` - корневой компонент Blazor, который подключает маршрутизацию страниц приложения.
+
+`Karp5Shop.Client/Layout/MainLayout.razor` - общий макет интерфейса. Содержит верхнюю панель, название приложения и кнопку переключения светлой/темной темы.
+
+`Karp5Shop.Client/Pages/Home.razor` - главная страница приложения. Здесь находится таблица товаров, форма добавления и редактирования, логика загрузки данных из API, сохранения и удаления товаров.
+
+`Karp5Shop.Client/wwwroot/index.html` - HTML-оболочка Blazor WebAssembly. Здесь подключаются стили, скрипт Blazor и JavaScript-функции для темы и подтверждения удаления.
+
+`Karp5Shop.Client/wwwroot/css/app.css` - основные стили интерфейса, включая светлую и темную тему, таблицу товаров, форму и адаптивную верстку.
+
+`Karp5Shop.Client/wwwroot/css/bootstrap/bootstrap.min.css` - Bootstrap, используется для базовых кнопок, таблиц, форм и уведомлений.
