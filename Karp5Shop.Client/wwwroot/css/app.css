@@ -1,0 +1,276 @@
+:root {
+    color-scheme: light;
+    --bg: #f4f6f8;
+    --surface: #ffffff;
+    --surface-muted: #eef2f6;
+    --text: #18202a;
+    --muted: #667485;
+    --border: #d7dee7;
+    --accent: #2563eb;
+    --danger: #dc2626;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #111827;
+    --surface: #1f2937;
+    --surface-muted: #283449;
+    --text: #f8fafc;
+    --muted: #b7c0cd;
+    --border: #3b4759;
+    --accent: #60a5fa;
+    --danger: #f87171;
+}
+
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+a,
+.btn-link {
+    color: var(--accent);
+}
+
+h1,
+h2,
+p {
+    margin-top: 0;
+}
+
+h1:focus {
+    outline: none;
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+.app-shell {
+    min-height: 100vh;
+}
+
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 64px;
+    padding: 0 2rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.brand {
+    color: var(--text);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.theme-toggle {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.85rem;
+    background: var(--surface-muted);
+    color: var(--text);
+}
+
+.content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.page-title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.page-title h1 {
+    font-size: 2rem;
+    margin-bottom: 0.35rem;
+}
+
+.page-title p {
+    color: var(--muted);
+    max-width: 760px;
+}
+
+.workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.product-list,
+.editor-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.product-list {
+    overflow: auto;
+}
+
+.editor-panel {
+    padding: 1.25rem;
+}
+
+.editor-panel h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.products-table {
+    margin: 0;
+    color: var(--text);
+}
+
+.products-table th {
+    background: var(--surface-muted);
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.products-table td,
+.products-table th {
+    border-color: var(--border);
+    vertical-align: middle;
+}
+
+.number-cell {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.actions-cell {
+    width: 180px;
+    white-space: nowrap;
+}
+
+.actions-cell .btn + .btn {
+    margin-left: 0.4rem;
+}
+
+.empty-state {
+    padding: 2rem;
+    color: var(--muted);
+}
+
+.form-label {
+    margin-top: 0.85rem;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.form-control {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+.form-control:focus {
+    background: var(--surface);
+    color: var(--text);
+}
+
+.validation-message,
+.validation-errors {
+    color: var(--danger);
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.65rem;
+    margin-top: 1.25rem;
+}
+
+#blazor-error-ui {
+    background: #fff3cd;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+.loading-progress {
+    position: relative;
+    display: block;
+    width: 8rem;
+    height: 8rem;
+    margin: 20vh auto 1rem auto;
+}
+
+.loading-progress circle {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 0.6rem;
+    transform-origin: 50% 50%;
+    transform: rotate(-90deg);
+}
+
+.loading-progress circle:last-child {
+    stroke: var(--accent);
+    stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+    transition: stroke-dasharray 0.05s ease-in-out;
+}
+
+.loading-progress-text {
+    position: absolute;
+    text-align: center;
+    font-weight: bold;
+    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+}
+
+.loading-progress-text::after {
+    content: var(--blazor-load-percentage-text, "Загрузка");
+}
+
+@media (max-width: 900px) {
+    .app-header,
+    .content {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .page-title,
+    .workspace {
+        display: block;
+    }
+
+    .page-title .btn {
+        margin-top: 0.75rem;
+    }
+
+    .editor-panel {
+        margin-top: 1rem;
+    }
+
+    .actions-cell {
+        width: auto;
+    }
+}

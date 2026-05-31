@@ -1,0 +1,210 @@
+@page "/"
+@inject HttpClient Http
+@inject IJSRuntime JsRuntime
+
+<PageTitle>Товары интернет-магазина</PageTitle>
+
+<section class="page-title">
+    <div>
+        <h1>Товары интернет-магазина</h1>
+        <p>Каталог хранится в SQLite через Entity Framework Core и управляется через ASP.NET Core API.</p>
+    </div>
+    <button class="btn btn-outline-secondary" type="button" @onclick="LoadProductsAsync" disabled="@isLoading">
+        Обновить
+    </button>
+</section>
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<section class="workspace">
+    <div class="product-list">
+        @if (isLoading)
+        {
+            <div class="empty-state">Загрузка товаров...</div>
+        }
+        else if (products.Count == 0)
+        {
+            <div class="empty-state">Товаров пока нет. Добавьте первый товар через форму справа.</div>
+        }
+        else
+        {
+            <table class="table products-table">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th class="number-cell">Цена</th>
+                        <th class="number-cell">Остаток</th>
+                        <th class="actions-cell">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in products)
+                    {
+                        <tr>
+                            <td>@product.Name</td>
+                            <td>@product.Description</td>
+                            <td class="number-cell">@product.Price.ToString("N2") ₽</td>
+                            <td class="number-cell">@product.Stock</td>
+                            <td class="actions-cell">
+                                <button class="btn btn-sm btn-outline-primary" type="button" @onclick="() => StartEdit(product)">Изменить</button>
+                                <button class="btn btn-sm btn-outline-danger" type="button" @onclick="() => DeleteProductAsync(product)">Удалить</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+    <aside class="editor-panel">
+        <h2>@(isEditing ? "Изменение товара" : "Добавление товара")</h2>
+        <EditForm Model="formModel" OnValidSubmit="SaveProductAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <label class="form-label" for="name">Название</label>
+            <InputText id="name" class="form-control" @bind-Value="formModel.Name" />
+
+            <label class="form-label" for="description">Описание</label>
+            <InputTextArea id="description" class="form-control" @bind-Value="formModel.Description" />
+
+            <label class="form-label" for="price">Цена</label>
+            <InputNumber id="price" class="form-control" @bind-Value="formModel.Price" />
+
+            <label class="form-label" for="stock">Количество на складе</label>
+            <InputNumber id="stock" class="form-control" @bind-Value="formModel.Stock" />
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit" disabled="@isSaving">
+                    @(isEditing ? "Сохранить" : "Добавить")
+                </button>
+                @if (isEditing)
+                {
+                    <button class="btn btn-outline-secondary" type="button" @onclick="CancelEdit" disabled="@isSaving">Отмена</button>
+                }
+            </div>
+        </EditForm>
+    </aside>
+</section>
+
+@code {
+    private List<ProductDto> products = [];
+    private ProductDto formModel = NewProduct();
+    private bool isEditing;
+    private bool isLoading;
+    private bool isSaving;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync() => await LoadProductsAsync();
+
+    private async Task LoadProductsAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            products = await Http.GetFromJsonAsync<List<ProductDto>>("api/products") ?? [];
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Не удалось загрузить товары: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void StartEdit(ProductDto product)
+    {
+        isEditing = true;
+        formModel = new ProductDto
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            Stock = product.Stock
+        };
+    }
+
+    private void CancelEdit()
+    {
+        isEditing = false;
+        formModel = NewProduct();
+    }
+
+    private async Task SaveProductAsync()
+    {
+        isSaving = true;
+        errorMessage = null;
+
+        try
+        {
+            HttpResponseMessage response = isEditing
+                ? await Http.PutAsJsonAsync($"api/products/{formModel.Id}", formModel)
+                : await Http.PostAsJsonAsync("api/products", formModel);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = $"API вернул ошибку {(int)response.StatusCode}: {response.ReasonPhrase}";
+                return;
+            }
+
+            CancelEdit();
+            await LoadProductsAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Не удалось сохранить товар: {ex.Message}";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private async Task DeleteProductAsync(ProductDto product)
+    {
+        var confirmed = await JsRuntime.InvokeAsync<bool>("karp5Theme.confirmDelete", product.Name);
+        if (!confirmed)
+        {
+            return;
+        }
+
+        errorMessage = null;
+
+        try
+        {
+            var response = await Http.DeleteAsync($"api/products/{product.Id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = $"API вернул ошибку {(int)response.StatusCode}: {response.ReasonPhrase}";
+                return;
+            }
+
+            if (formModel.Id == product.Id)
+            {
+                CancelEdit();
+            }
+
+            await LoadProductsAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Не удалось удалить товар: {ex.Message}";
+        }
+    }
+
+    private static ProductDto NewProduct() =>
+        new()
+        {
+            Price = 1,
+            Stock = 0
+        };
+}

@@ -1,0 +1,38 @@
+@inherits LayoutComponentBase
+@inject IJSRuntime JsRuntime
+
+<div class="app-shell">
+    <header class="app-header">
+        <a class="brand" href="">Karp5Shop</a>
+        <button class="theme-toggle" type="button" @onclick="ToggleTheme">
+            @(isDarkTheme ? "Светлая тема" : "Темная тема")
+        </button>
+    </header>
+
+    <main class="content">
+        @Body
+    </main>
+</div>
+
+@code {
+    private bool isDarkTheme;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var theme = await JsRuntime.InvokeAsync<string>("karp5Theme.current");
+        isDarkTheme = theme == "dark";
+        await JsRuntime.InvokeVoidAsync("karp5Theme.apply", isDarkTheme ? "dark" : "light");
+        StateHasChanged();
+    }
+
+    private async Task ToggleTheme()
+    {
+        isDarkTheme = !isDarkTheme;
+        await JsRuntime.InvokeVoidAsync("karp5Theme.apply", isDarkTheme ? "dark" : "light");
+    }
+}

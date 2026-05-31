@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Karp5Shop</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="Karp5Shop.Client.styles.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        Произошла ошибка.
+        <a href="" class="reload">Обновить</a>
+        <a class="dismiss">x</a>
+    </div>
+
+    <script>
+        window.karp5Theme = {
+            apply: theme => {
+                document.documentElement.dataset.theme = theme;
+                localStorage.setItem('karp5-theme', theme);
+            },
+            current: () => localStorage.getItem('karp5-theme') || 'light',
+            confirmDelete: name => confirm(`Удалить товар "${name}"?`)
+        };
+
+        window.karp5Theme.apply(window.karp5Theme.current());
+    </script>
+    <script src="_framework/blazor.webassembly.js"></script>
+</body>
+
+</html>

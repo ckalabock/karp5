@@ -1,0 +1,6 @@
+@Karp5Shop.Server_HostAddress = http://localhost:5183
+
+GET {{Karp5Shop.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
